@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  db:
+    image: pavan1097/project:dbimage
+    ports:
+      - "3306:3306"
+    deploy:
+      replicas: 1
+
+  auth_service:
+    image: pavan1097/project:authimage
+    depends_on:
+      - db
+    ports:
+      - "5001:5001"
+    deploy:
+      replicas: 1
+
+  book_service:
+    image: pavan1097/project:bookimage
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "5002:5002"
+    deploy:
+      replicas: 1
+
+  borrow_service:
+    image: pavan1097/project:borrowimage
+    depends_on:
+      - db
+    ports:
+      - "5003:5003"
+    deploy:
+      replicas: 1
+
+  app:
+    image: pavan1097/project:appimage
+    container_name: project-app
+    depends_on:
+      - auth_service
+      - book_service
+      - borrow_service
+    ports:
+      - "5000:5000"
+    deploy:
+      replicas: 1
+
